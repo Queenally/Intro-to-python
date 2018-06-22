@@ -1,11 +1,15 @@
 from random import randint
-print('welcome to Yahtzee, the greatest dice game ever!!! Here are the rules: ')
+print('Welcome to Wacky Yahtzee, the greatest dice game ever!!! Here are the rules: ')
 rules = (''' 1. Each player gets to throw 5 dice up to three times
  2. player doesn't have to roll all 5 dice on the second and third round
  3. you can put as many dice to the side and can only throw the ones that you don't want''')
 print(rules)
-player1storage = {'ones':0, 'twos': 0, 'threes':0, 'fours':0,'fives':0, 'sixes':0,'YAHTZEE':0}
-player2storage = {'ones':0, 'twos': 0, 'threes':0, 'fours':0,'fives':0, 'sixes':0,'YAHTZEE':0}
+print('       ')
+print(''' The objective of this game is to get as many points as possible
+by rolling five dice and getting certain combonations. So have fun!!!''')
+print('     ')
+player1storage = {'ones':0, 'twos': 0, 'threes':0, 'fours':0,'fives':0, 'sixes':0,'YAHTZEE':0,'total':0}
+player2storage = {'ones':0, 'twos': 0, 'threes':0, 'fours':0,'fives':0, 'sixes':0,'YAHTZEE':0,'total':0}
 def play(rollnumber, diceleft, scard1, playernumber, allchoices= [], isplaying = True):
  if isplaying:
   options = []
@@ -16,27 +20,27 @@ def play(rollnumber, diceleft, scard1, playernumber, allchoices= [], isplaying =
   for x in range(diceleft):
    options.append(randint(1,6))
   print('It is player %s turn'%playernumber )
-  
-  
   print('Your options are:%s ' %options)
-  choiceofdice = raw_input('Which dice do you want to take out: ')
+  doyouwannaplay = 'yes'
+  if rollnumber == 2 or rollnumber == 3:
+   doyouwannaplay = raw_input('do you wanna keep going? yes or no: ')
+  if doyouwannaplay == 'yes':
+   choiceofdice = raw_input('Which dice do you want to take out: ')
+   
+   playerkept = choiceofdice.split(',')
   
-  playerkept = choiceofdice.split(',')
+   for num in playerkept:
+    fullplay.append(num)
+   addtoscorecard(playerkept, scard1)
  
-  for num in playerkept:
-   fullplay.append(num)
-  addtoscorecard(playerkept, scard1)
- # if rollnumber == 2:
-   #print('Your options are:%s ' %options)
-  # keeprolling = raw_input('Do you wan to keep rolling')
-  # if keeprolling ==  'no':
-    # scorecard(scard1,False)
-    # isplaying = False
-  if rollnumber < 3 and diceleft > 0:
-    play(rollnumber + 1,diceleft - len(playerkept), scard1, playernumber, fullplay,isplaying)
+   if rollnumber < 3 and diceleft > 0:
+     play(rollnumber + 1,diceleft - len(playerkept), scard1, playernumber, fullplay,isplaying)
+   else:
+    isyahtzee = yahtzee1(fullplay)
+    scorecard(scard1,isyahtzee)
   else:
-   isyahtzee = yahtzee1(fullplay)
-   scorecard(scard1,isyahtzee)
+    print('ok')
+    scorecard(scard1,False)
 
   
 def yahtzee1(checklist):
@@ -67,6 +71,7 @@ def addtoscorecard(listofkept,scard):
       scard['fives'] = scard['fives'] + 5
     if y == 6:
       scard['sixes'] = scard['sixes'] + 6
+  scard['total'] = scard["ones"] + scard['twos'] + scard['threes'] + scard['fours'] + scard['fives'] + scard['sixes']
  
 def scorecard(storage,isityahtzee):
  if isityahtzee:
@@ -76,6 +81,7 @@ def scorecard(storage,isityahtzee):
    print(val,storage[val])
    total = total + storage[val]
  print('this is your total: %d' %total)
+ 
  
 def fullcategories(p1sc,p2sc):
  p1vals = p1sc.values()
@@ -87,9 +93,17 @@ def fullcategories(p1sc,p2sc):
   if values == 0:
    return False
   return True
+  
+ 
 full = fullcategories(player1storage,player2storage) 
 while not full:
  
  play(1,5,player1storage,1)
  play(1,5,player2storage,2)
- full = fullcategories(player1storage,player2storage) 
+ full = fullcategories(player1storage,player2storage)
+if player1storage['total'] > player2storage['total']:
+ print('Player 1 wins!!!')
+elif player2storage['total'] > player1storage['total']:
+ print('Player 2 wins!!!')
+elif player1storage['total']== player2storage['total']:
+  print('It is a draw!!')
